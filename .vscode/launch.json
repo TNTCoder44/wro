@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Launch",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pybricksdev",
+      "args": ["run", "ble", "--name", "", "${workspaceFolder}/main.py"]
+    }
+  ]
+}
