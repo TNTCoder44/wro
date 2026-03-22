@@ -3,6 +3,7 @@
 ###
 
 from pybricks.tools import wait, StopWatch
+from pybricks.parameters import Stop
 
 from subsystems.scanner import ScannerSubsystem
 from utils.pid_controller import PIDController
@@ -22,6 +23,7 @@ class DriveSubsystem:
         self.line_sensor = line_sensor
 
         self.straight_controller = PIDController(constants.kStraightPID, max_output=30)
+        self.turn_controller = PIDController(constants.kTurnPID, max_output=30)
 
         self.scanner = ScannerSubsystem(
             self.color_sensor
@@ -112,7 +114,117 @@ class DriveSubsystem:
 
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
+    def straight_time(self, time_ms, power, target_angle = -1):
+        self.reset_encoder_position()
+        self.straight_controller.reset()
 
-    def turn_to_angle(self, target_angle, max_power):
+        if target_angle == -1:
+            target_angle = self.hub.imu.heading() # use current heading as targetangle
+        
+        time_of_driving = StopWatch()
+
+        while time_of_driving.time() < time_ms:
+            current_heading = self.hub.imu.heading()
+
+            error = target_angle - current_heading
+            correction = self.straight_controller.calculate(error)
+
+            # no trapezoidal motion profile because we don't know the distance
+            # using constant power instead
+            leftPower = power + correction
+            rightPower = power - correction
+
+            self.left.dc(leftPower)
+            self.right.dc(rightPower)
+
+        self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
+
+    # drive until black line detected
+    def straight_reflection_start(self, reflection_color, power, sensor_in_use='line'):
+        self.reset_encoder_position()
+        self.straight_controller.reset()
+
+        if sensor_in_use == 'color':
+            sensor = self.color_sensor
+        else:
+            sensor = self.line_sensor # default choice
+            
+        target_angle = self.hub.imu.heading() # use current heading as targetangle
+
+        while True:
+            current_heading = self.hub.imu.heading()
+            current_reflection = sensor.reflection()
+
+
+            error = target_angle - current_heading
+            correction = self.straight_controller.calculate(error)
+
+            self.left.dc(power + correction)
+            self.right.dc(power - correction)
+
+            # if a dark color is detected, we need to check if reflection is below threshold
+            if reflection_color < 50 and sensor_in_use == 'line': 
+                if current_reflection < reflection_color:
+                    break
+            else: 
+                if (current_reflection > reflection_color):
+                    break
+                # if a light color is detected, we need to check if reflection is above threshold
+                # this also applies to the color sensor, because we only want to detect bright colors
+
+        self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
+
+    def straight_reflection_end(self):
+        #TODO: implement method
         pass
 
+    def turn_angle(self, target_angle, max_power=75, exit_time=1500):
+        # reset pid controller
+        self.turn_controller.reset()
+        
+        # because of the use of a while true loop, we need an exit condition
+        # to prevent infinite looping in case of sensor/pid failure 
+        exit_timer = StopWatch()
+
+        while True:
+            current_angle = self.hub.imu.heading()
+
+            ## clamp error to -180 to 180 range, 
+            ## because error can be maximum 180 degrees in either direction from current heading
+            ## -> method should be efficient 
+            error = target_angle - current_angle 
+            error = (error + 180) % 360 - 180
+
+            correction = self.turn_controller.calculate(error)
+            
+            # apply correction directly to motors therefore clamp to max power
+            correction = max(-max_power, min(correction, max_power))
+
+            # exit conditions
+            if abs(error) < constants.kErrorForTurn: # if within error threshold, stop
+                break
+
+            if exit_timer.time() > exit_time: # if taking too long, exit to prevent infinite loop
+                break
+
+            # minimum power
+            if abs(correction) < constants.kMinimumPower and abs(error) > constants.kErrorForTurn:
+                correction = constants.kMinimumPower * (1 if correction > 0 else -1)
+
+            self.left.dc(correction)
+            self.right.dc(-correction)
+
+        self.stop_for_time(5)
+
+    # fallback methods for using each drive motor individually
+    def left_degrees(self, degrees, speed, then=Stop.HOLD, wait=True):
+        self.left.run_angle(speed, degrees, then=Stop.HOLD, wait=wait)
+
+    def right_degrees(self, degrees, speed, then=Stop.HOLD, wait=True):
+        self.right.run_angle(speed, degrees, then=Stop.HOLD, wait=wait)
+
+    def left_time(self, time_ms, speed, then=Stop.HOLD, wait=True):
+        self.left.run_time(speed, time_ms, then=Stop.HOLD, wait=wait)
+
+    def right_time(self, time_ms, speed, then=Stop.HOLD, wait=True):
+        self.right.run_time(speed, time_ms, then=Stop.HOLD, wait=wait)

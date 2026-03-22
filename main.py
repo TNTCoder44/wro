@@ -2,14 +2,12 @@
 ### main.py - Entry point for the robot
 ###
 
-from robot import Robot
+from paths import *
 from pybricks.tools import StopWatch
 
 timer = StopWatch()
 
-robot = Robot()
-
-robot.drive.test_drive()
+start_routine()
 
 if (timer.time()):
     print("Time taken: ", timer.time() / 1000.0, " seconds")

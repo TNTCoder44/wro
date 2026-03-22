@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Launch",
+      "name": "Deploy",
       "type": "debugpy",
       "request": "launch",
       "module": "pybricksdev",
