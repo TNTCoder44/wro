@@ -22,8 +22,9 @@ class DriveSubsystem:
         self.color_sensor = color_sensor
         self.line_sensor = line_sensor
 
-        self.straight_controller = PIDController(constants.kStraightPID, max_output=30)
-        self.turn_controller = PIDController(constants.kTurnPID, max_output=30)
+        self.straight_controller = PIDController(constants.kStraightPID)
+        self.turn_controller = PIDController(constants.kTurnPID)
+        self.line_controller = PIDController(constants.kLinePID)
 
         self.scanner = ScannerSubsystem(
             self.color_sensor
@@ -175,8 +176,39 @@ class DriveSubsystem:
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
     def straight_reflection_end(self):
-        #TODO: implement method
+        # drive straight until line is finished
         pass
+
+    def straight_line_distance(self, distance_mm, power, side='left'):
+        self.reset_encoder_position()
+        self.line_controller.reset()
+
+        # target reflection value for line following
+        # TODO: test on robot with actual line reflection
+        target_reflection = constants.kReflectionBlack + constants.kReflectionWhite / 2
+        
+        target_degrees = abs(self.get_degrees_from_mm(distance_mm))
+
+        direction = 1 if side == 'left' else -1
+
+        while abs(self.get_motor_position()) < target_degrees:
+            current_reflection = self.line_sensor.reflection()
+
+            # pid controller for heading correction
+            error = target_reflection - current_reflection
+            correction = self.line_controller.calculate(error)
+
+            left_power = power + correction * direction
+            right_power = power - correction * direction
+
+            max_power = max(abs(left_power), abs(right_power), 100) # maximum 100%
+            left_power = (left_power / max_power) * 100
+            right_power = (right_power / max_power) * 100
+
+            self.left.dc(left_power)
+            self.right.dc(right_power)
+
+        self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
     def turn_angle(self, target_angle, max_power=75, exit_time=1500):
         # reset pid controller

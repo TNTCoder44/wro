@@ -24,7 +24,8 @@ kErrorForTurn = 1.0
 kReflectionBlack = 15
 kReflectionWhite = 75
 
-kStraightPID = (2.0, 0.0, 0.3) ## PID for straight driving: (kP, kI, kD)
-kTurnPID = (1.5, 0.0, 0.2) ## PID for turning: (kP, kI, kD)
+kStraightPID = (11.0, 0.0, 0.1) ## PID for straight driving: (kP, kI, kD)
+kTurnPID = (5.5, 0.0, 0.25) ## PID for turning: (kP, kI, kD)
+kLinePID = (0.5, 0.0, 0.2) ## PID for line following: (kP, kI, kD)
 
 kMinimumPower = 10
