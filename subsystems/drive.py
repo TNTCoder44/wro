@@ -73,12 +73,12 @@ class DriveSubsystem:
         if (target_angle == -1):
             target_angle = self.hub.imu.heading() # use current heading as targetangle
 
-        target_degrees = self.get_degrees_from_mm(distance_mm)
+        target_degrees = abs(self.get_degrees_from_mm(distance_mm))
         direction = 1 if distance_mm >= 0 else -1
 
         accel_dist = target_degrees * accel_ratio
         decel_dist = target_degrees * accel_ratio if direction == 1 else target_degrees * accel_ratio * 2
-        relative_distance = target_degrees ## distane left
+        relative_distance = target_degrees ## distance left
 
         while relative_distance >= 0:
             current_heading = self.hub.imu.heading()
@@ -92,9 +92,9 @@ class DriveSubsystem:
             # trapezoidal motion profile
             if trapezoidal_speed and distance_mm != 0:
                 if accel and current_degrees < accel_dist:
-                    power = max_power * (current_degrees / accel_dist)
+                    power = constants.kMinimumPower + ((current_degrees / accel_dist) * (max_power - constants.kMinimumPower))
                 elif decel and relative_distance < decel_dist:
-                    power = max_power * (relative_distance / decel_dist)
+                    power = constants.kMinimumPower + ((relative_distance / decel_dist) * (max_power - constants.kMinimumPower))
                 else:
                     power = max_power
 
@@ -175,9 +175,101 @@ class DriveSubsystem:
 
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
-    def straight_reflection_end(self):
-        # drive straight until line is finished
-        pass
+    def straight_reflection_end(self, power, side='left'):
+        # drive straight until line is finished or is on a crossing
+        self.reset_encoder_position()
+        self.line_controller.reset()
+
+        # target reflection value for line following
+        # TODO: test on robot with actual line reflection
+        target_reflection =  constants.kReflectionAvg #constants.kReflectionBlack + constants.kReflectionWhite / 2
+        
+        direction = 1 if side == 'left' else -1
+
+        while True: 
+            current_reflection = self.line_sensor.reflection()
+            
+            error = target_reflection - current_reflection
+
+            if error > constants.kReflectionError:
+                break
+
+            correction = self.line_controller.calculate(error)
+
+            left_power = power + correction * direction
+            right_power = power - correction * direction
+
+            max_power = max(abs(left_power), abs(right_power), 100) # maximum 100%
+            left_power = (left_power / max_power) * 100
+            right_power = (right_power / max_power) * 100
+
+            self.left.dc(left_power)
+            self.right.dc(right_power)
+
+        self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
+
+
+    # drive straight distance while scanning colors for the samples
+    def straight_scanner(self, distance_mm, max_power, target_angle=90, scan_dist=560):
+        # reset angles to start from 0
+        self.reset_encoder_position()
+        self.straight_controller.reset()
+
+        # dutycycle is between 0 and 100
+        max_power = max(0, min(max_power, 100))
+
+        if (target_angle == -1):
+            target_angle = self.hub.imu.heading() # use current heading as targetangle
+
+        target_degrees = abs(self.get_degrees_from_mm(distance_mm))
+        scan_degrees = abs(self.get_degrees_from_mm(scan_dist))
+
+        direction = 1 if distance_mm >= 0 else -1
+        relative_distance = target_degrees 
+
+        accel_ratio = 0.2
+        accel_dist = target_degrees * accel_ratio
+
+        sample_positions = [] # list of sample positions(color of sample) -> position based on list index
+
+        while relative_distance >= 0:
+            current_heading = self.hub.imu.heading()
+            current_degrees = self.get_motor_position()
+            relative_distance = target_degrees - current_degrees
+
+            #TODO: implement scanning
+            ## scanning for samples
+            ## put color into list / nothing -> no sample detected
+            if current_degrees < constants.kStartScanningDegrees:
+                distance_from_start = current_degrees - constants.kStartScanningDegrees
+                if distance_from_start % constants.kDistanceBetweenSamples <= 10: # certain threshold
+                    sample_color = self.scanner.scan()
+                    sample_positions.append(sample_color)
+                    self.hub.speaker.beep(100, 500) # beep to indicate a sample was scanned
+                
+                if distance_from_start >= scan_degrees: # if we scanned enough, we can also stop driving
+                    break
+
+            # heading pid controller
+            error = target_angle - current_heading
+            correction = self.straight_controller.calculate(error)
+
+            # trapezoidal motion profile
+            if current_degrees < accel_dist:
+                power = constants.kMinimumPower + ((current_degrees / accel_dist) * (max_power - constants.kMinimumPower))
+            elif relative_distance < accel_dist:
+                power = constants.kMinimumPower + ((relative_distance / accel_dist) * (max_power - constants.kMinimumPower))
+            else:
+                power = max_power
+
+            power = max(constants.kMinimumPower, min(power, max_power)) * direction
+
+            self.left.dc(power + correction)
+            self.right.dc(power - correction)
+
+        self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
+        return sample_positions
+
 
     def straight_line_distance(self, distance_mm, power, side='left'):
         self.reset_encoder_position()
@@ -185,7 +277,7 @@ class DriveSubsystem:
 
         # target reflection value for line following
         # TODO: test on robot with actual line reflection
-        target_reflection = constants.kReflectionBlack + constants.kReflectionWhite / 2
+        target_reflection =  constants.kReflectionAvg #constants.kReflectionBlack + constants.kReflectionWhite / 2
         
         target_degrees = abs(self.get_degrees_from_mm(distance_mm))
 

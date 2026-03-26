@@ -13,8 +13,7 @@ class Robot:
 
         self.left_drive_motor = Motor(constants.kPortLeftDriveMotor, Direction.COUNTERCLOCKWISE)
         self.right_drive_motor = Motor(constants.kPortRightDriveMotor, Direction.CLOCKWISE)
-        self.arm_back_motor = Motor(constants.kPortArmBackMotor, Direction.CLOCKWISE)
-
+        
         self.front_motor_arm = Motor(constants.kPortArmFrontMotor, Direction.CLOCKWISE)
         self.back_motor_arm = Motor(constants.kPortArmBackMotor, Direction.CLOCKWISE)
 

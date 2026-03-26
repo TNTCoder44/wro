@@ -18,11 +18,17 @@ kPortLineSensor = Port.F
 kWheelDiameter = 50 ## in millimeters
 kDegsPerMM = 360 / (PI * kWheelDiameter) ## degrees per millimeter
 
+kStartScanningDegrees = 340 # TODO: test on real field to determine startpos
+kDistanceBetweenSamples = 100 #test
+
 kErrorForTurn = 1.0
 
 # reflection values for line sensor used for line following
 kReflectionBlack = 15
 kReflectionWhite = 75
+kReflectionAvg = 60
+
+kReflectionError = 10
 
 kStraightPID = (11.0, 0.0, 0.1) ## PID for straight driving: (kP, kI, kD)
 kTurnPID = (5.5, 0.0, 0.25) ## PID for turning: (kP, kI, kD)

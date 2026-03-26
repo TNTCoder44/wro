@@ -9,6 +9,4 @@ class ScannerSubsystem:
     # scan for colors using hsv values for more accurate sample detection
     def scan(self, iterations: int):
         
-
-        
-        pass
+        pass ##todo
