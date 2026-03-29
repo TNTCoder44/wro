@@ -7,7 +7,8 @@ from pybricks.tools import StopWatch
 
 timer = StopWatch()
 
-start_routine()
+#start_routine()
+test_samples()
 
 if (timer.time()):
     print("Time taken: ", timer.time() / 1000.0, " seconds")

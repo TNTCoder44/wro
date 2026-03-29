@@ -2,13 +2,21 @@
 ### ArmSubsystem class for controlling the arm mechanism
 ###
 
+from pybricks.parameters import Stop
+from utils import constants
+
 class ArmSubsystem:
     def __init__(self, front_motor, back_motor):
         self.front = front_motor
         self.front.reset_angle(0)
         self.back = back_motor
         self.back.reset_angle(0)
+        self.speed = constants.kSpeedArm
 
-    def move_arm(self, position: float):
-        # Implement the logic to control the arm based on the desired position
-        pass
+    # give position in degrees
+    # no need for pid control because standard contorl will be accurate enough for simple motion
+    def move_front_arm(self, position: float, wait=True):
+       self.front.run_target(self.speed, position, then=Stop.HOLD, wait=wait) 
+
+
+    
