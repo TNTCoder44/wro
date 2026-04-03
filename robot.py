@@ -1,10 +1,10 @@
 from pybricks.hubs import PrimeHub
 from pybricks.pupdevices import Motor, ColorSensor
 
-import utils.constants as constants
+import constants as constants
 
-from subsystems.drive import DriveSubsystem
-from subsystems.arm import ArmSubsystem
+from drive import DriveSubsystem
+from arm import ArmSubsystem
 
 class Robot: 
     def __init__(self):
@@ -13,8 +13,8 @@ class Robot:
         self.left_drive_motor = Motor(constants.kPortLeftDriveMotor, constants.kDirectionLeftDrive)
         self.right_drive_motor = Motor(constants.kPortRightDriveMotor, constants.kDirectionRightDrive)
         
-        self.front_motor_arm = Motor(constants.kPortArmFrontMotor, constants.kDirectionArmFront)
-        self.back_motor_arm = Motor(constants.kPortArmBackMotor, constants.kDirectionArmBack)
+        #self.front_motor_arm = Motor(constants.kPortArmFrontMotor, constants.kDirectionArmFront)
+        #self.back_motor_arm = Motor(constants.kPortArmBackMotor, constants.kDirectionArmBack)
 
         self.color_sensor = ColorSensor(constants.kPortColorSensor)
         self.line_sensor = ColorSensor(constants.kPortLineSensor)
@@ -26,7 +26,7 @@ class Robot:
             self.color_sensor,
             self.line_sensor
         )
-
+        return
         self.arm = ArmSubsystem(
             self.front_motor_arm,
             self.back_motor_arm

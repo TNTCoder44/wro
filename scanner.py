@@ -27,7 +27,7 @@ class ScannerSubsystem:
 
         avg = [hsv_total[i] / iterations for i in range(3)]
  
-        if avg[2] < 15:
+        if avg[2] < 5:
             return Colors.NONE 
 
         # possible colors for samples:
@@ -38,10 +38,10 @@ class ScannerSubsystem:
         if avg[0] > 320 or avg[0] < 40:
             return Colors.RED
         
-        elif avg[0] < 70 and avg[0] > 50:
+        elif avg[0] < 70 and avg[0] > 35:
             return Colors.YELLOW
         
-        elif avg[0] < 130 and avg[0] > 110:
+        elif avg[0] < 160 and avg[0] > 130:
             return Colors.GREEN
         
         return Colors.NONE

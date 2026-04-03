@@ -20,25 +20,27 @@ kDirectionArmFront = Direction.CLOCKWISE
 kPortColorSensor = Port.E
 kPortLineSensor = Port.F
 
-kWheelDiameter = 50 ## in millimeters
+kWheelDiameter = 55.5 ## in millimeters
 kDegsPerMM = 360 / (PI * kWheelDiameter) ## degrees per millimeter
 
 kStartScanningDegrees = 340 # TODO: test on real field to determine startpos
-kDegreesBetweenSamples = 175 #test
+kDistanceBetweenSamples = 175 #test
 
-kErrorForTurn = 1.0
+kErrorForTurn = 0.1
 
 # reflection values for line sensor used for line following
 kReflectionBlack = 15
-kReflectionWhite = 75
+kReflectionWhite = 95
 kReflectionAvg = 60
 
 kReflectionError = 20
 
-kStraightPID = (11.0, 0.0, 0.1) ## PID for straight driving: (kP, kI, kD)
-kTurnPID = (5.5, 0.0, 0.25) ## PID for turning: (kP, kI, kD)
+kStraightPID = (3.2, 0.0, 0.2) ## PID for straight driving: (kP, kI, kD)
+kTurnPID = (5.7, 0.0, 0.3) ## PID for turning: (kP, kI, kD)
 kLinePID = (0.5, 0.0, 0.2) ## PID for line following: (kP, kI, kD)
 
-kMinimumPower = 10
+kMinimumPower = 30
+kMinPower = 30
+kMaxPower = 100
 
 kSpeedArm = 360

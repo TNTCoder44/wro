@@ -3,8 +3,7 @@
 ###
 
 from pybricks.parameters import Stop
-from utils import constants
-
+import constants as constants
 class ArmSubsystem:
     def __init__(self, front_motor, back_motor):
         self.front = front_motor

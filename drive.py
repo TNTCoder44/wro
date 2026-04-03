@@ -5,9 +5,9 @@
 from pybricks.tools import wait, StopWatch
 from pybricks.parameters import Stop
 
-from subsystems.scanner import ScannerSubsystem
-from utils.pid_controller import PIDController
-import utils.constants as constants
+from scanner import ScannerSubsystem
+from pid_controller import PIDController
+import constants as constants
 
 class DriveSubsystem:
     def __init__(self, hub, left_motor, right_motor, color_sensor, line_sensor):
@@ -86,16 +86,21 @@ class DriveSubsystem:
             relative_distance = target_degrees - current_degrees
 
             # heading pid controller
+
             error = target_angle - current_heading
+
             correction = self.straight_controller.calculate(error)
 
             # trapezoidal motion profile
             if trapezoidal_speed and distance_mm != 0:
-                if accel and current_degrees < accel_dist:
-                    power = constants.kMinimumPower + ((current_degrees / accel_dist) * (max_power - constants.kMinimumPower))
-                elif decel and relative_distance < decel_dist:
-                    power = constants.kMinimumPower + ((relative_distance / decel_dist) * (max_power - constants.kMinimumPower))
+                if current_degrees < accel_dist and accel == True:
+                    # Acceleration phase
+                    power = constants.kMinimumPower + ((current_degrees / accel_dist) * (max_power - (constants.kMinimumPower-3)))
+                elif relative_distance < decel_dist and decel == True:
+                    # Deceleration phase
+                    power = constants.kMinimumPower + ((relative_distance / decel_dist) * (max_power - (constants.kMinimumPower-3)))
                 else:
+                    # middle phase
                     power = max_power
 
                 power = max(constants.kMinimumPower, min(power, max_power)) * direction
@@ -141,7 +146,7 @@ class DriveSubsystem:
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
     # drive until black line detected
-    def straight_reflection_start(self, reflection_color, power, sensor_in_use='line'):
+    def straight_reflection_start(self, power, reflection_color=constants.kReflectionBlack, sensor_in_use='line'):
         self.reset_encoder_position()
         self.straight_controller.reset()
 
@@ -156,13 +161,6 @@ class DriveSubsystem:
             current_heading = self.hub.imu.heading()
             current_reflection = sensor.reflection()
 
-
-            error = target_angle - current_heading
-            correction = self.straight_controller.calculate(error)
-
-            self.left.dc(power + correction)
-            self.right.dc(power - correction)
-
             # if a dark color is detected, we need to check if reflection is below threshold
             if reflection_color < 50 and sensor_in_use == 'line': 
                 if current_reflection < reflection_color:
@@ -173,7 +171,15 @@ class DriveSubsystem:
                 # if a light color is detected, we need to check if reflection is above threshold
                 # this also applies to the color sensor, because we only want to detect bright colors
 
+            error = target_angle - current_heading
+            correction = self.straight_controller.calculate(error)
+
+            self.left.dc(power + correction)
+            self.right.dc(power - correction)            
+
+        #self.hub.speaker.beep(100, 500)
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
+
 
     def straight_reflection_end(self, power, side='left'):
         # drive straight until line is finished or is on a crossing
@@ -184,14 +190,16 @@ class DriveSubsystem:
         # TODO: test on robot with actual line reflection
         target_reflection =  constants.kReflectionAvg #constants.kReflectionBlack + constants.kReflectionWhite / 2
         
-        direction = 1 if side == 'left' else -1
+        direction = -1 if side == 'left' else 1
+
+        timer = StopWatch()
 
         while True: 
             current_reflection = self.line_sensor.reflection()
             
             error = target_reflection - current_reflection
 
-            if error > constants.kReflectionError:
+            if current_reflection < constants.kReflectionBlack and timer.time() > 700: 
                 break
 
             correction = self.line_controller.calculate(error)
@@ -206,11 +214,13 @@ class DriveSubsystem:
             self.left.dc(left_power)
             self.right.dc(right_power)
 
+        
+        #self.hub.speaker.beep(100, 500)
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
 
     # drive straight distance while scanning colors for the samples
-    def straight_scanner(self, distance_mm, max_power, target_angle=90, scan_dist=560):
+    def straight_scanner(self, distance_mm, max_power, target_angle=None, scan_dist=560):
         # reset angles to start from 0
         self.reset_encoder_position()
         self.straight_controller.reset()
@@ -218,7 +228,7 @@ class DriveSubsystem:
         # dutycycle is between 0 and 100
         max_power = max(0, min(max_power, 100))
 
-        if (target_angle == -1):
+        if (target_angle == None):
             target_angle = self.hub.imu.heading() # use current heading as targetangle
 
         target_degrees = abs(self.get_degrees_from_mm(distance_mm))
@@ -237,18 +247,17 @@ class DriveSubsystem:
             current_degrees = self.get_motor_position()
             relative_distance = target_degrees - current_degrees
 
-            #TODO: implement scanning
             ## scanning for samples
             ## put color into list / nothing -> no sample detected
-            if current_degrees < constants.kStartScanningDegrees:
+            if current_degrees > constants.kStartScanningDegrees:
                 distance_from_start = current_degrees - constants.kStartScanningDegrees
                 if distance_from_start % constants.kDistanceBetweenSamples <= 10: # certain threshold
                     sample_color = self.scanner.scan()
                     sample_positions.append(sample_color)
-                    self.hub.speaker.beep(100, 500) # beep to indicate a sample was scanned
+                    #self.hub.speaker.beep(100, 500) # beep to indicate a sample was scanned
                 
                 if distance_from_start >= scan_degrees: # if we scanned enough, we can also stop driving
-                    break
+                    pass#break
 
             # heading pid controller
             error = target_angle - current_heading
@@ -256,11 +265,11 @@ class DriveSubsystem:
 
             # trapezoidal motion profile
             if current_degrees < accel_dist:
-                power = constants.kMinimumPower + ((current_degrees / accel_dist) * (max_power - constants.kMinimumPower))
+                power = constants.kMinPower + ((current_degrees / accel_dist) * (max_power - constants.kMinPower))
             elif relative_distance < accel_dist:
-                power = constants.kMinimumPower + ((relative_distance / accel_dist) * (max_power - constants.kMinimumPower))
+                power = constants.kMinPower + ((relative_distance / accel_dist) * (max_power - constants.kMinPower))
             else:
-                power = max_power
+                power = constants.kMaxPower
 
             power = max(constants.kMinimumPower, min(power, max_power)) * direction
 
@@ -281,14 +290,19 @@ class DriveSubsystem:
         
         target_degrees = abs(self.get_degrees_from_mm(distance_mm))
 
-        direction = 1 if side == 'left' else -1
+        direction = -1 if side == 'left' else 1
 
         while abs(self.get_motor_position()) < target_degrees:
             current_reflection = self.line_sensor.reflection()
 
             # pid controller for heading correction
             error = target_reflection - current_reflection
-            correction = self.line_controller.calculate(error)
+
+
+            if abs(error) < 5:
+                correction = 0
+            else: 
+                correction = self.line_controller.calculate(error)
 
             left_power = power + correction * direction
             right_power = power - correction * direction
@@ -302,7 +316,7 @@ class DriveSubsystem:
 
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
-    def turn_angle(self, target_angle, max_power=75, exit_time=1500):
+    def turn_angle(self, target_angle, wheel="both", max_power=55, exit_time=1000):
         # reset pid controller
         self.turn_controller.reset()
         
@@ -335,8 +349,15 @@ class DriveSubsystem:
             if abs(correction) < constants.kMinimumPower and abs(error) > constants.kErrorForTurn:
                 correction = constants.kMinimumPower * (1 if correction > 0 else -1)
 
-            self.left.dc(correction)
-            self.right.dc(-correction)
+            if wheel == "both":
+                self.left.dc(correction)
+                self.right.dc(-correction)
+            elif wheel == "left":
+                self.left.dc(correction)
+            elif wheel == "right":
+                self.right.dc(-correction)
+
+            wait(1)
 
         self.stop_for_time(5)
 

@@ -38,9 +38,9 @@ class PIDController:
         
         i = self.kI * self.integral
 
-        output = p + i + d
+        output = p + d + i
 
-        self.timer = self.timer.reset()
+        self.timer.reset()
         self.previous_error = error
 
         # apply min and max output limits
@@ -49,6 +49,8 @@ class PIDController:
 
         if self.max_output is not None and abs(output) > self.max_output:
             output = self.max_output * (1 if output > 0 else -1)
+
+
 
         return output
     

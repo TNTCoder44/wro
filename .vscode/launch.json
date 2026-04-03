@@ -6,7 +6,7 @@
       "type": "debugpy",
       "request": "launch",
       "module": "pybricksdev",
-      "args": ["run", "ble", "--name", "", "${workspaceFolder}/main.py"]
+      "args": ["run", "ble", "--name", "Kaktus", "${workspaceFolder}/main.py"]
     }
   ]
 }
