@@ -362,7 +362,7 @@ class DriveSubsystem:
             elif wheel == "right":
                 self.right.dc(-correction)
 
-            wait(1)
+            wait(5)
 
         self.stop_for_time(5)
 
