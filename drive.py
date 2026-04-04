@@ -234,6 +234,8 @@ class DriveSubsystem:
         target_degrees = abs(self.get_degrees_from_mm(distance_mm))
         scan_degrees = abs(self.get_degrees_from_mm(scan_dist))
 
+        print(target_degrees, scan_degrees)
+
         direction = 1 if distance_mm >= 0 else -1
         relative_distance = target_degrees 
 
@@ -241,6 +243,7 @@ class DriveSubsystem:
         accel_dist = target_degrees * accel_ratio
 
         sample_positions = [] # list of sample positions(color of sample) -> position based on list index
+        last_sample_index = -1
 
         while relative_distance >= 0:
             current_heading = self.hub.imu.heading()
@@ -251,13 +254,21 @@ class DriveSubsystem:
             ## put color into list / nothing -> no sample detected
             if current_degrees > constants.kStartScanningDegrees:
                 distance_from_start = current_degrees - constants.kStartScanningDegrees
-                if distance_from_start % constants.kDistanceBetweenSamples <= 10: # certain threshold
+                sample_index = int(distance_from_start // constants.kDistanceBetweenSamples)
+
+                # Only scan once per slot to avoid duplicate detections in the same window.
+                if (
+                    distance_from_start % constants.kDistanceBetweenSamples <= 10
+                    and sample_index != last_sample_index
+                ):
+                    print("here, ", distance_from_start, sample_index)
                     sample_color = self.scanner.scan()
                     sample_positions.append(sample_color)
+                    last_sample_index = sample_index
                     #self.hub.speaker.beep(100, 500) # beep to indicate a sample was scanned
                 
                 if distance_from_start >= scan_degrees: # if we scanned enough, we can also stop driving
-                    pass#break
+                    break
 
             # heading pid controller
             error = target_angle - current_heading

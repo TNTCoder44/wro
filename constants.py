@@ -23,8 +23,8 @@ kPortLineSensor = Port.F
 kWheelDiameter = 55.5 ## in millimeters
 kDegsPerMM = 360 / (PI * kWheelDiameter) ## degrees per millimeter
 
-kStartScanningDegrees = 340 # TODO: test on real field to determine startpos
-kDistanceBetweenSamples = 175 #test
+kStartScanningDegrees = 382 # TODO: test on real field to determine startpos, offset based on robot length
+kDistanceBetweenSamples = 195
 
 kErrorForTurn = 0.5
 
@@ -35,7 +35,7 @@ kReflectionAvg = 60
 
 kReflectionError = 20
 
-kStraightPID = (3.2, 0.0, 0.2) ## PID for straight driving: (kP, kI, kD)
+kStraightPID = (3.2, 0.0, 0.15) ## PID for straight driving: (kP, kI, kD)
 kTurnPID = (7, 0.0, 0.1) ## PID for turning: (kP, kI, kD)
 kLinePID = (0.5, 0.0, 0.2) ## PID for line following: (kP, kI, kD)
 

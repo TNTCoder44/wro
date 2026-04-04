@@ -15,10 +15,8 @@ def start_routine():
 
     #robot.drive.straight_reflection_end(100)
 
-    robot.drive.straight_distance(800, 100)
-    robot.drive.turn_angle(180)
-    robot.drive.straight_distance(800, 100)
-    robot.drive.turn_angle(0)
+    samples = robot.drive.straight_scanner(1200, 60)
+    print(samples)
     
     print(robot.hub.imu.heading())
     
