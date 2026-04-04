@@ -15,25 +15,9 @@ def start_routine():
 
     #robot.drive.straight_reflection_end(100)
 
-    robot.drive.turn_angle(90, wheel="left")
-    robot.drive.turn_angle(180, wheel="right")
+    robot.drive.turn_angle(90)
     
-    robot.hub.speaker.beep(200, 100)
-       
-    return
-
-    #robot.drive.straight_distance(700, 70)
-    #robot.drive.straight_reflection_end(100)
-    robot.drive.straight_distance(800, 75)
-    robot.hub.speaker.beep(200, 100)
-    robot.drive.turn_angle(180)
-    samples = robot.drive.straight_scanner(700, 75)
-    #samples = robot.drive.straight_scanner(700, 75)
-
-
-    wait(1000)
-
-    print(samples)
+    print(robot.hub.imu.heading())
     
     
 def test_samples():

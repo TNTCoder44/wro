@@ -26,7 +26,7 @@ kDegsPerMM = 360 / (PI * kWheelDiameter) ## degrees per millimeter
 kStartScanningDegrees = 340 # TODO: test on real field to determine startpos
 kDistanceBetweenSamples = 175 #test
 
-kErrorForTurn = 0.1
+kErrorForTurn = 0.5
 
 # reflection values for line sensor used for line following
 kReflectionBlack = 15
@@ -36,7 +36,7 @@ kReflectionAvg = 60
 kReflectionError = 20
 
 kStraightPID = (3.2, 0.0, 0.2) ## PID for straight driving: (kP, kI, kD)
-kTurnPID = (5.7, 0.0, 0.3) ## PID for turning: (kP, kI, kD)
+kTurnPID = (5.5, 0.0, 0.25) ## PID for turning: (kP, kI, kD)
 kLinePID = (0.5, 0.0, 0.2) ## PID for line following: (kP, kI, kD)
 
 kMinimumPower = 30

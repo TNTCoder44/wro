@@ -316,13 +316,14 @@ class DriveSubsystem:
 
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
-    def turn_angle(self, target_angle, wheel="both", max_power=55, exit_time=1000):
+    def turn_angle(self, target_angle, wheel="both", max_power=75, exit_time=1000):
         # reset pid controller
         self.turn_controller.reset()
         
         # because of the use of a while true loop, we need an exit condition
         # to prevent infinite looping in case of sensor/pid failure 
         exit_timer = StopWatch()
+        angle_deb = StopWatch()
 
         while True:
             current_angle = self.hub.imu.heading()
@@ -339,15 +340,19 @@ class DriveSubsystem:
             correction = max(-max_power, min(correction, max_power))
 
             # exit conditions
-            if abs(error) < constants.kErrorForTurn: # if within error threshold, stop
-                break
-
             if exit_timer.time() > exit_time: # if taking too long, exit to prevent infinite loop
                 break
 
+            if abs(error) < 0.95:
+                if angle_deb.time() > 160:
+                    break
+            else:
+                angle_deb.reset() # reset debounce timer if error is above threshold
+
+
             # minimum power
-            if abs(correction) < constants.kMinimumPower and abs(error) > constants.kErrorForTurn:
-                correction = constants.kMinimumPower * (1 if correction > 0 else -1)
+            if abs(correction) < 16 and abs(error) > constants.kErrorForTurn:
+                correction = 16 * (1 if correction > 0 else -1)
 
             if wheel == "both":
                 self.left.dc(correction)
