@@ -13,10 +13,8 @@ def start_routine():
     #robot.drive.straight_time(750, -40)
     #robot.hub.imu.reset_heading(0) ## reset gyro for starting at wall
 
-    #robot.drive.straight_reflection_end(100)
+    robot.drive.straight_distance(1000, 80)
 
-    samples = robot.drive.straight_scanner(1200, 60)
-    print(samples)
     
     print(robot.hub.imu.heading())
     

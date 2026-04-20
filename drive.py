@@ -216,6 +216,8 @@ class DriveSubsystem:
 
         
         #self.hub.speaker.beep(100, 500)
+        self.straight_distance(constants.kLineOffset, power) # drive a bit more to ensure we are past the line
+
         self.stop_for_time(10) # brake for 10 milliseconds to ensure a complete stop
 
 

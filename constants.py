@@ -6,21 +6,21 @@ from pybricks.parameters import Port, Direction
 
 PI = 3.14159
 
-kPortLeftDriveMotor = Port.A
+kPortLeftDriveMotor = Port.D
 kDirectionLeftDrive = Direction.COUNTERCLOCKWISE
-kPortRightDriveMotor = Port.B
+kPortRightDriveMotor = Port.C
 kDirectionRightDrive = Direction.CLOCKWISE
 
 
-kPortArmBackMotor = Port.C
+kPortArmBackMotor = Port.B
 kDirectionArmBack = Direction.CLOCKWISE
-kPortArmFrontMotor = Port.D
-kDirectionArmFront = Direction.CLOCKWISE
+kPortArmFrontMotor = Port.A
+kDirectionArmFront = Direction.COUNTERCLOCKWISE
 
 kPortColorSensor = Port.E
 kPortLineSensor = Port.F
 
-kWheelDiameter = 55.5 ## in millimeters
+kWheelDiameter = 55.7 ## in millimeters
 kDegsPerMM = 360 / (PI * kWheelDiameter) ## degrees per millimeter
 
 kStartScanningDegrees = 382 # TODO: test on real field to determine startpos, offset based on robot length
@@ -34,6 +34,8 @@ kReflectionWhite = 95
 kReflectionAvg = 60
 
 kReflectionError = 20
+
+kLineOffset = 45
 
 kStraightPID = (3.2, 0.0, 0.15) ## PID for straight driving: (kP, kI, kD)
 kTurnPID = (7, 0.0, 0.1) ## PID for turning: (kP, kI, kD)
