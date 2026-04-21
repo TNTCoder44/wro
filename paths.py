@@ -47,6 +47,7 @@ def remove_ball():
 def samples_routine(): 
     global samples 
 
+    robot.arm.move_front_arm(90, wait=True)
     robot.drive.straight_reflection_start(50)
     robot.drive.straight_distance(150, 50)
     robot.drive.turn_angle(90)
@@ -70,23 +71,30 @@ def green_white_routine():
     robot.hub.imu.reset_heading(0)
     # reverse samples, because we start from the other side of the field
     samp = samples[::-1]
-    print(samp)
-
     
     # go until green sample position, then back/forward until white sample
     # finally go against wall at the top to reset imu
-    green_pos = samp.index(Colors.GREEN) * constants.kDistanceBetweenSamples + constants.kStartSamplesDistance
-    white_pos = samp.index(Colors.WHITE) * constants.kDistanceBetweenSamples + constants.kStartSamplesDistance
+
+    between_mm = constants.kDistanceBetweenSamples * constants.kDegsPerMM
+
+    #.index sometimes throws an error; this cannot be used
+    try:
+        green_pos = samp.index(Colors.GREEN) * between_mm + constants.kStartSamplesDistance
+        white_pos = samp.index(Colors.WHITE) * between_mm + constants.kStartSamplesDistance
+    except ValueError:
+        green_pos = samp.index(Colors.NONE) * between_mm + constants.kStartSamplesDistance
+        white_pos = samp.index(Colors.NONE) * between_mm + constants.kStartSamplesDistance
 
     diff = white_pos - green_pos
+
     samp_dist = 50 # test on field; in mm
 
-    robot.drive.straight_distance(green_pos, 70)
+    robot.drive.straight_distance(green_pos, 50)
     robot.drive.turn_angle(90)
 
     robot.arm.move_back_arm(140, wait=True)
     robot.drive.straight_distance(-samp_dist, 70)
-    robot.arm.move_back_arm(70, wait=True)
+    robot.arm.move_back_arm(100, wait=True)
     robot.drive.straight_distance(samp_dist, 70)
 
     robot.drive.turn_angle(0)
@@ -99,8 +107,13 @@ def green_white_routine():
     robot.drive.straight_distance(samp_dist, 70)
 
     robot.drive.turn_angle(0)
-    robot.drive.straight_time(3000) #TODO: test on real field for imu reset
+    robot.drive.straight_time(1500, 60) #TODO: test on real field for imu reset
 
+    robot.hub.imu.reset_heading(0)
+    robot.drive.straight_distance(-150, 50)
+    robot.drive.turn_angle(90)
+    robot.drive.straight_reflection_start(50)
+    #TODO: put samples down
 
     
 
