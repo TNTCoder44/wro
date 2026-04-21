@@ -13,7 +13,7 @@ kDirectionRightDrive = Direction.CLOCKWISE
 
 
 kPortArmBackMotor = Port.B
-kDirectionArmBack = Direction.CLOCKWISE
+kDirectionArmBack = Direction.COUNTERCLOCKWISE
 kPortArmFrontMotor = Port.A
 kDirectionArmFront = Direction.COUNTERCLOCKWISE
 
@@ -23,13 +23,17 @@ kPortLineSensor = Port.F
 kWheelDiameter = 55.7 ## in millimeters
 kDegsPerMM = 360 / (PI * kWheelDiameter) ## degrees per millimeter
 
-kStartScanningDegrees = 382 # TODO: test on real field to determine startpos, offset based on robot length
-kDistanceBetweenSamples = 195
+
+# 250 mm
+kStartScanningDegrees = 514 # TODO: test on real field to determine startpos, offset based on robot length
+kDistanceBetweenSamples = 194 # 94mm
+
+kStartSamplesDistance = 190 # mm
 
 kErrorForTurn = 0.5
 
 # reflection values for line sensor used for line following
-kReflectionBlack = 15
+kReflectionBlack = 20
 kReflectionWhite = 95
 kReflectionAvg = 60
 

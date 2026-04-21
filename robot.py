@@ -14,7 +14,7 @@ class Robot:
         self.right_drive_motor = Motor(constants.kPortRightDriveMotor, constants.kDirectionRightDrive)
         
         self.front_motor_arm = Motor(constants.kPortArmFrontMotor, constants.kDirectionArmFront)
-        self.back_motor_arm = 0#Motor(constants.kPortArmBackMotor, constants.kDirectionArmBack)
+        self.back_motor_arm = Motor(constants.kPortArmBackMotor, constants.kDirectionArmBack)
 
         self.color_sensor = ColorSensor(constants.kPortColorSensor)
         self.line_sensor = ColorSensor(constants.kPortLineSensor)

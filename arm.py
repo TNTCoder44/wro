@@ -9,7 +9,7 @@ class ArmSubsystem:
         self.front = front_motor
         self.front.reset_angle(0)
         self.back = back_motor
-        #self.back.reset_angle(0)
+        self.back.reset_angle(0)
         self.speed = constants.kSpeedArm
 
     # give position in degrees

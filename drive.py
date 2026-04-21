@@ -197,6 +197,7 @@ class DriveSubsystem:
         while True: 
             current_reflection = self.line_sensor.reflection()
             
+            
             error = target_reflection - current_reflection
 
             if current_reflection < constants.kReflectionBlack and timer.time() > 700: 
@@ -236,8 +237,6 @@ class DriveSubsystem:
         target_degrees = abs(self.get_degrees_from_mm(distance_mm))
         scan_degrees = abs(self.get_degrees_from_mm(scan_dist))
 
-        print(target_degrees, scan_degrees)
-
         direction = 1 if distance_mm >= 0 else -1
         relative_distance = target_degrees 
 
@@ -263,7 +262,6 @@ class DriveSubsystem:
                     distance_from_start % constants.kDistanceBetweenSamples <= 10
                     and sample_index != last_sample_index
                 ):
-                    print("here, ", distance_from_start, sample_index)
                     sample_color = self.scanner.scan()
                     sample_positions.append(sample_color)
                     last_sample_index = sample_index
