@@ -32,7 +32,7 @@ class ScannerSubsystem:
 
         # possible colors for samples:
         #   white, red, green, yellow
-        if avg[1] < 30 and avg[2] < 80: 
+        if avg[1] < 50 and avg[2] < 50: 
             return Colors.WHITE
         
         if avg[0] > 320 or avg[0] < 40:
