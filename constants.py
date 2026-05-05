@@ -49,4 +49,4 @@ kMinimumPower = 30
 kMinPower = 30
 kMaxPower = 100
 
-kSpeedArm = 360
+kSpeedArm = 150

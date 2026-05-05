@@ -45,11 +45,11 @@ def remove_ball():
 def samples_routine(): 
     global samples 
 
-    robot.arm.move_front_arm(90, wait=True)
+    robot.arm.move_front_arm(50, wait=True)
     robot.drive.straight_reflection_start(50)
-    robot.drive.straight_distance(150, 50)
+    robot.drive.straight_distance(160, 50)
     robot.drive.turn_angle(90)
-    robot.drive.straight_time(500, -50)
+    robot.drive.straight_time(700, -50)
 
     robot.hub.imu.reset_heading(0)
     samples = robot.drive.straight_scanner(1000, 50)
@@ -58,8 +58,8 @@ def samples_routine():
 def score_drone():
     robot.drive.straight_distance(-50, 50)
     robot.drive.turn_angle(90, wheel="left")
-    robot.drive.straight_distance(800, 60)
-    robot.drive.straight_distance(-1000, 60)
+    robot.drive.straight_distance(800, 80)
+    robot.drive.straight_distance(-1000, 80)
     robot.drive.turn_angle(180)
     robot.drive.straight_time(500, -50)
 
@@ -71,7 +71,7 @@ def deliver_samples_top(left):
     robot.drive.straight_reflection_start(50)
     robot.drive.straight_line_distance(20, 50, "right")
 
-    delivery_dist = 150
+    delivery_dist = 180
 
     #TODO: put samples down
     if (not left):
@@ -81,9 +81,19 @@ def deliver_samples_top(left):
 
 
     robot.drive.straight_distance(-delivery_dist, 50)
-    robot.arm.move_back_arm(180, wait=True)
-    robot.drive.straight_distance(delivery_dist, 50)
+    robot.arm.move_back_arm(145, wait=True)
+    robot.drive.straight_distance(20, 50)
+    robot.arm.move_back_arm(80, wait=True)
+    robot.drive.straight_distance(delivery_dist - 20, 50)
+    
+    robot.drive.turn_angle(-100)
+    robot.drive.straight_distance(-delivery_dist, 50)
+    robot.arm.move_back_arm(148, wait=True)
+    robot.drive.straight_distance(20, 50)
+    robot.arm.move_back_arm(80, wait=True)
+    robot.drive.straight_distance(delivery_dist - 20, 50)
     robot.drive.turn_angle(-90)
+
 
 def green_white_routine():
     global samples
@@ -112,15 +122,25 @@ def green_white_routine():
     robot.drive.straight_distance(green_pos, 50)
     robot.drive.turn_angle(90)
 
-    robot.arm.move_back_arm(165, wait=True)
+    robot.arm.move_back_arm(148, wait=True)
     robot.drive.straight_distance(-samp_dist, 70)
-    robot.arm.move_back_arm(100, wait=True)
+    robot.arm.move_back_arm(80, wait=True)
     robot.drive.straight_distance(samp_dist, 70)
 
     robot.drive.turn_angle(0)
     robot.drive.straight_distance(diff, 70)
+
+    robot.drive.turn_angle(90)
+
+    #
+    robot.arm.move_back_arm(140, wait=True)
+    robot.drive.straight_distance(-samp_dist, 70)
+    robot.arm.move_back_arm(80, wait=True)
+    robot.drive.straight_distance(samp_dist, 70)
+    #
+
+    robot.drive.turn_angle(0)
     
-    #robot.drive.turn_angle(0)
     robot.drive.straight_time(2000, 60) #TODO: test on real field for imu reset
 
     deliver_samples_top(False)
@@ -134,13 +154,13 @@ def green_white_routine():
     robot.hub.imu.reset_heading(0)
 
 
-    robot.drive.straight_distance(-(field_width-white_pos), 50)
+    robot.drive.straight_distance(-(field_width-white_pos) + 230, 50)
     robot.drive.turn_angle(90)
 
     #
-    robot.arm.move_back_arm(165, wait=True)
+    robot.arm.move_back_arm(148, wait=True)
     robot.drive.straight_distance(-samp_dist, 70)
-    robot.arm.move_back_arm(100, wait=True)
+    robot.arm.move_back_arm(80, wait=True)
     robot.drive.straight_distance(samp_dist, 70)
     #
 
