@@ -9,7 +9,6 @@ from pybricks.tools import wait
 timer = StopWatch()
 
 start_routine()
-#test_samples()
 
 if (timer.time()):
     print("Time taken: ", timer.time() / 1000.0, " seconds")

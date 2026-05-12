@@ -41,7 +41,7 @@ kReflectionError = 20
 
 kLineOffset = 45
 
-kStraightPID = (3.2, 0.0, 0.15) ## PID for straight driving: (kP, kI, kD)
+kStraightPID = (3.8, 0.0, 0.25) ## PID for straight driving: (kP, kI, kD)
 kTurnPID = (7, 0.0, 0.1) ## PID for turning: (kP, kI, kD)
 kLinePID = (0.5, 0.0, 0.2) ## PID for line following: (kP, kI, kD)
 
@@ -50,3 +50,7 @@ kMinPower = 30
 kMaxPower = 100
 
 kSpeedArm = 150
+
+kBackUp = 80
+kBackDown = 133
+kBackDeliver = 150

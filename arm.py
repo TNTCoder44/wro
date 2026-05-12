@@ -15,7 +15,7 @@ class ArmSubsystem:
     # give position in degrees
     # no need for pid control because standard contorl will be accurate enough for simple motion
     def move_front_arm(self, position: float, wait=True):
-       self.front.run_target(self.speed, position, then=Stop.HOLD, wait=wait) 
+       self.front.run_target(self.speed, position, then=Stop.BRAKE, wait=wait) 
 
     def move_back_arm(self, position: float, wait=True):
         self.back.run_target(self.speed, position, then=Stop.HOLD, wait=wait)
