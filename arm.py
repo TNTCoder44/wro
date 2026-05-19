@@ -17,6 +17,8 @@ class ArmSubsystem:
     def move_front_arm(self, position: float, wait=True):
        self.front.run_target(self.speed, position, then=Stop.BRAKE, wait=wait) 
 
-    def move_back_arm(self, position: float, wait=True):
-        self.back.run_target(self.speed, position, then=Stop.HOLD, wait=wait)
+    def move_back_arm(self, position: float, wait=True, velocity=None):
+        if velocity == None:
+            velocity = self.speed
+        self.back.run_target(velocity, position, then=Stop.HOLD, wait=wait)
     
