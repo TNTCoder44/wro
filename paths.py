@@ -21,6 +21,7 @@ def start_routine():
     samples_routine()
     score_drone()
     deliver_samples()
+    end_in_zone()
 
 def start_rover():
     dist = 170 # test on field; in mm
@@ -90,14 +91,14 @@ def deliver_samples_top():
     robot.drive.straight_reflection_start(50)
     robot.drive.straight_line_distance(20, 50, "right")
 
-    delivery_dist = 140
+    delivery_dist = 130
 
-    var = 22
+    var = 17
 
     robot.drive.turn_angle(-105)
 
     robot.drive.straight_distance(-delivery_dist, 50)
-    robot.arm.move_back_arm(constants.kBackDeliver, wait=True)
+    robot.arm.move_back_arm(constants.kBackDown-4, wait=True)
     robot.drive.straight_distance(var, 50)
     robot.arm.move_back_arm(constants.kBackUp, wait=True)
     robot.drive.straight_distance(delivery_dist - var, 50)
@@ -105,10 +106,10 @@ def deliver_samples_top():
     
     robot.drive.turn_angle(-80)
 
-    delivery_dist += 25
+    delivery_dist += 30
 
     robot.drive.straight_distance(-delivery_dist, 50)
-    robot.arm.move_back_arm(constants.kBackDown, wait=True) ### on purpose backdown, because green is very low and likes to be stuck
+    robot.arm.move_back_arm(constants.kBackDown-4, wait=True) ### on purpose backdown, because green is very low and likes to be stuck
     robot.drive.straight_distance(var, 50)
     robot.drive.straight_distance(delivery_dist - var, 50)
     robot.arm.move_back_arm(constants.kBackUp, wait=True)
@@ -143,7 +144,7 @@ def deliver_samples_bottom():
     robot.drive.straight_distance(-delivery_dist, 50)
     robot.arm.move_back_arm(constants.kBackDown, wait=True)
     robot.arm.move_back_arm(constants.kBackUp, wait=True) ### on purpose again, because red is very low and likes to be stuck
-    robot.arm.move_back_arm(constants.kBackDown, wait=True)
+    robot.arm.move_back_arm(constants.kBackDown, wait=True, velocity=100)
     robot.drive.straight_distance(var, 50)
     robot.drive.straight_distance(delivery_dist - var, 50)
     robot.arm.move_back_arm(constants.kBackUp, wait=True)
@@ -262,11 +263,18 @@ def deliver_samples():
 
 
 def end_in_zone():
+    #robot.arm.move_back_arm(constants.kBackUp, wait=True)
+    #robot.arm.move_front_arm(20, wait=True)
+
+    robot.drive.straight_distance(400, 70)
+    robot.drive.turn_angle(0)
+    robot.drive.straight_time(600, -70)
+    robot.hub.imu.reset_heading(0)
+
+    robot.drive.straight_distance(340, 50)
+    robot.drive.turn_angle(90)
+
+    robot.drive.straight_distance(850, 100)
+    robot.drive.turn_angle(180, wheel="right")
+    robot.drive.straight_distance(35, 100)
     return
-
-
-
-
-
-
-
