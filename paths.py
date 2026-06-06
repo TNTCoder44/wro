@@ -17,7 +17,7 @@ def start_routine():
     security_run()
     #remove_ball()
     #score_ball()
-
+    
     samples_routine()
     score_drone()
     deliver_samples()
@@ -37,23 +37,31 @@ def start_rover():
     robot.arm.move_front_arm(80, wait=True)
     
 def remove_ball():
-    robot.drive.turn_angle(-177, max_power=70)
-    robot.arm.move_front_arm(127, wait=True)
-    robot.drive.straight_distance(150, 55)
-    robot.drive.straight_distance(-75, 55)
+    robot.drive.turn_angle(180, max_power=50)
+    robot.arm.move_front_arm(136, wait=True)
+    robot.drive.straight_distance(150, 85)
+    robot.drive.straight_distance(-75, 65)
     robot.drive.straight_distance(75, 55)
-    robot.drive.straight_distance(-75, 45)
+    robot.drive.straight_distance(-55, 65)
 
 def score_ball():
-    robot.drive.straight_distance(-65, 50)
-    robot.drive.turn_angle(-90, max_power=40)
-    robot.drive.straight_reflection_end(50)
-    robot.drive.turn_angle(180, max_power=40)
-    robot.drive.straight_distance(15, 50)
+    robot.drive.straight_distance(-55, 45)
+    robot.drive.turn_angle(-90, max_power=30)
+    robot.drive.straight_reflection_end(40)
+    robot.drive.turn_angle(180, max_power=30)
+    robot.drive.straight_distance(15, 40)
     robot.arm.move_front_arm(100, wait=False)
     robot.drive.straight_distance(15, 50)
     robot.arm.move_front_arm(80, wait=True)
-    robot.drive.straight_distance(30, 50)
+    robot.drive.straight_distance(40, 50)
+    robot.drive.straight_distance(-40, 50)
+    robot.arm.move_front_arm(100, wait=True)
+    robot.drive.straight_distance(15, 50)
+    robot.arm.move_front_arm(120, wait=False)
+    robot.drive.straight_distance(10, 50)
+
+    robot.drive.straight_distance(-55, 50)
+    robot.drive.turn_angle(0)
 
 def samples_routine(): 
     global samples 
@@ -186,7 +194,7 @@ def deliver_samples():
     if (diff < 0):
         diff += 30
     else:
-        diff -= 5
+        diff += 5
 
     samp_dist = 90 # test on field; in mm
 
@@ -263,7 +271,7 @@ def deliver_samples():
 
 
 def end_in_zone():
-    #robot.arm.move_back_arm(constants.kBackUp, wait=True)
+    robot.arm.move_back_arm(30, wait=True)
     #robot.arm.move_front_arm(20, wait=True)
 
     robot.drive.straight_distance(400, 70)
@@ -274,7 +282,5 @@ def end_in_zone():
     robot.drive.straight_distance(340, 50)
     robot.drive.turn_angle(90)
 
-    robot.drive.straight_distance(850, 100)
-    robot.drive.turn_angle(180, wheel="right")
-    robot.drive.straight_distance(35, 100)
+    robot.drive.straight_distance(880, 100)
     return
