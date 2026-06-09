@@ -28,12 +28,12 @@ kDegsPerMM = 360 / (PI * kWheelDiameter) ## degrees per millimeter
 kStartScanningDegrees = 514 # TODO: test on real field to determine startpos, offset based on robot length
 kDistanceBetweenSamples = 194 # 94mm
 
-kStartSamplesDistance = 190 # mm
+kStartSamplesDistance = 190 - 8 # mm :::
 
 kErrorForTurn = 0.5
 
 # reflection values for line sensor used for line following
-kReflectionBlack = 20
+kReflectionBlack = 22
 kReflectionWhite = 95
 kReflectionAvg = 60
 

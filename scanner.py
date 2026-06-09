@@ -29,7 +29,7 @@ class ScannerSubsystem:
 
         print("HSV: ", avg[1], avg[2])
 
-        if avg[2] < 2 and avg[1] < 2:
+        if avg[2] < 2 and (avg[1] < 2 or avg[1] > 99):
             return Colors.NONE 
         
 

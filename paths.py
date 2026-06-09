@@ -19,7 +19,7 @@ def start_routine():
     #score_ball()
     
     samples_routine()
-    score_drone()
+    score_drone_and_meteor()
     deliver_samples()
     end_in_zone()
 
@@ -76,11 +76,17 @@ def samples_routine():
     samples = robot.drive.straight_scanner(1000, 50)
     print(samples)
 
-def score_drone():
+def score_drone_and_meteor():
     robot.drive.straight_distance(-50, 50)
     robot.drive.turn_angle(90, wheel="left")
     robot.drive.straight_distance(800, 80)
-    robot.drive.straight_distance(-1000, 80)
+    robot.drive.straight_distance(-830, 80)
+    robot.drive.turn_angle(130, max_power=50)
+    robot.arm.move_back_arm(constants.kBackDeliver, wait=True)
+    robot.drive.turn_angle(70, max_power=45)
+    robot.arm.move_back_arm(50, wait=True)
+    robot.drive.turn_angle(90)
+    robot.drive.straight_distance(-170, 80)
     robot.drive.turn_angle(180)
     robot.drive.straight_time(500, -50)
 
@@ -88,8 +94,6 @@ def security_run():
     robot.drive.turn_angle(-90)
     robot.drive.straight_distance(475, 70)
     robot.drive.turn_angle(0)
-
-
 
 def deliver_samples_top():
     robot.hub.imu.reset_heading(0)
@@ -143,7 +147,6 @@ def deliver_samples_bottom():
     robot.drive.straight_distance(var, 50)
     robot.arm.move_back_arm(constants.kBackUp, wait=True)
     robot.drive.straight_distance(delivery_dist - var, 50)
-    
     
     robot.drive.turn_angle(-75)
 
@@ -202,7 +205,7 @@ def deliver_samples():
     robot.drive.turn_angle(90)
     
     # get green
-    robot.arm.move_back_arm(constants.kBackDown - 4, wait=True)
+    robot.arm.move_back_arm(constants.kBackDown - 6, wait=True)
     robot.drive.straight_distance(-samp_dist, 70)
     robot.arm.move_back_arm(constants.kBackUp, wait=True)
     robot.drive.straight_distance(samp_dist, 70)
@@ -213,7 +216,7 @@ def deliver_samples():
     robot.drive.turn_angle(90)
 
     # get white
-    robot.arm.move_back_arm(constants.kBackDown - 4, wait=True)
+    robot.arm.move_back_arm(constants.kBackDown - 6, wait=True, velocity=100)
     robot.drive.straight_distance(-samp_dist, 70)
     robot.arm.move_back_arm(constants.kBackUp, wait=True)
     robot.drive.straight_distance(samp_dist, 70)
@@ -234,11 +237,11 @@ def deliver_samples():
     robot.hub.imu.reset_heading(0)
 
 
-    robot.drive.straight_distance(-(field_width-red_pos) + 230, 50)
+    robot.drive.straight_distance(-(field_width-red_pos) + 230 + 8, 50)
     robot.drive.turn_angle(90)
 
     # get red
-    robot.arm.move_back_arm(constants.kBackDown - 4, wait=True)
+    robot.arm.move_back_arm(constants.kBackDown - 6, wait=True)
     robot.drive.straight_distance(-samp_dist, 70)
     robot.arm.move_back_arm(constants.kBackUp, wait=True)
     robot.drive.straight_distance(samp_dist, 70)
@@ -256,7 +259,7 @@ def deliver_samples():
     robot.drive.turn_angle(90)
 
     # get yellow
-    robot.arm.move_back_arm(constants.kBackDown, wait=True, velocity=100)
+    robot.arm.move_back_arm(constants.kBackDown - 4, wait=True, velocity=100)
     robot.drive.straight_distance(-samp_dist, 70)
     robot.arm.move_back_arm(constants.kBackUp, wait=True)
     robot.drive.straight_distance(samp_dist, 70)
@@ -279,7 +282,7 @@ def end_in_zone():
     robot.drive.straight_time(600, -70)
     robot.hub.imu.reset_heading(0)
 
-    robot.drive.straight_distance(340, 50)
+    robot.drive.straight_distance(345, 50)
     robot.drive.turn_angle(90)
 
     robot.drive.straight_distance(880, 100)
